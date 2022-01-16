@@ -11,7 +11,6 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 # find the protobuf compiler and libraries
 find_package(Protobuf REQUIRED)
-
 # check if protobuf was found
 if(PROTOBUF_FOUND)
     message ("protobuf found")
@@ -25,13 +24,11 @@ if(APPLE)
     SET(INC_DIR /usr/local/include/ /usr/local/boost/boost_1_75_0)
     SET(LIB_DIR /usr/local/lib/ /usr/local/boost/boost_1_75_0/stage/lib)
 elseif(WIN32)
-    message("UNIX2")
+    message("WIN32")
 elseif(UNIX)
     message("UNIX3")
-    SET(INC_DIR /usr/local/include /usr/boost_1_75/include ${PROTOBUF_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/msg)
+    SET(INC_DIR /usr/local/include /usr/boost_1_75/include ${PROTOBUF_INCLUDE_DIRS})
     SET(LIB_DIR /usr/local/lib /usr/boost_1_75/lib)
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 set(THIRD_LIBS 
@@ -40,12 +37,16 @@ set(THIRD_LIBS
     boost_thread
     )
 
-set(LOCAL_LIB cnbase cnpb)
+set(LOCAL_LIB 
+    cnbase 
+    cnpb 
+    #cnnet
+    )
+
 set(LIBS ${THIRD_LIBS} ${LOCAL_LIB})
 
 SET(CMAKE_BUILD_TYPE "Debug")
 #SET(CMAKE_BUILD_TYPE "Release")
-
 
 include_directories(${INC_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/msg)
@@ -55,6 +56,9 @@ link_directories(${LIB_DIR} ${LIBRARY_OUTPUT_PATH} /home/cn/work/cpp/cpp_project
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/base")
 add_subdirectory("${PROJECT_SOURCE_DIR}/msg")
+add_subdirectory("${PROJECT_SOURCE_DIR}/net")
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/examples")
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/tcpserver")
 add_subdirectory("${PROJECT_SOURCE_DIR}/tcpclient")
