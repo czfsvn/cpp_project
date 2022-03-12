@@ -1,8 +1,10 @@
 #ifndef __TIME_USEAGE_20220116_H__
 #define __TIME_USEAGE_20220116_H__
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
+
+#define BLOCK_COST cncpp::BlockCost __cost__(__FUNCTION__, __LINE__)
 
 namespace cncpp
 {
@@ -10,9 +12,7 @@ namespace cncpp
     class TimeUseage
     {
     public:
-        TimeUseage()
-            : begin(high_resolution_clock::now())
-        {}
+        TimeUseage() : begin(high_resolution_clock::now()) {}
 
         void reset()
         {
@@ -20,7 +20,7 @@ namespace cncpp
         }
 
         // ƒ¨»œ ‰≥ˆ∫¡√Î
-        template<typename Duartion = milliseconds>
+        template <typename Duartion = milliseconds>
         int64_t elapsed() const
         {
             return duration_cast<Duartion>(high_resolution_clock::now() - begin).count();
@@ -62,15 +62,12 @@ namespace cncpp
     class BlockCost
     {
     public:
-        BlockCost(const char *func, uint32_t lines)
-            : func_name(func)
-            , line(lines)
-        {}
+        BlockCost(const char* func, uint32_t lines) : func_name(func), line(lines) {}
 
         ~BlockCost()
         {
-            std::cout << func_name << ":" << line << ", cost: [" << timer.elapsed_nano()
-                      << "] nano sec" << std::endl;
+            std::cout << func_name << ":" << line << ", \tcost: [" << timer.elapsed_micro() << "] \tmicro sec"
+                      << std::endl;
         }
 
     private:
@@ -78,6 +75,6 @@ namespace cncpp
         uint32_t    line      = 0;
         TimeUseage  timer     = {};
     };
-} // namespace cncpp
+}  // namespace cncpp
 
 #endif

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 
-add_executable(server main.cpp)
-target_link_libraries(server ${LIBS})
+aux_source_directory(. SRCS)
+add_executable(server ${SRCS})
+target_link_libraries(server PRIVATE ${LIBS})

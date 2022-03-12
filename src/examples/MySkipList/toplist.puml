@@ -1,0 +1,80 @@
+@startuml
+TopList *-- SkipList
+SkipList *-- SkipNode
+
+SkipNode *-- NextNode
+
+NextNode *-- SkipNode
+
+
+class NextNode
+{
+    uint32_t span;
+    SkipNode* next;
+}
+
+class SkipNode
+{
+    + uint64_t key;
+    + uint64_t score;
+    + uint16_t level;
+    + SkipNode* backward;
+    + std::vector<NextNode> next_nodes;
+}
+
+class SkipList
+{
+- uint32_t length_;
+- uint16_t level_;
+- SkipNode* header_;
+- SkipNode* tail_;
+
++ SkipNode*     Insert(key, score)
++ SkipNode*     UpdateScore(key, curscore, newscore)
+
++ int32_t       Delete(key, score)
++ uint64_t      DeleteByRangedScore(minscore, maxscore)
++ uint64_t      DeleteByRangedRank(rankfrom, rankto)
+
++ uint64_t      GetRank()
++ uint64_t      GetKeyByRank()
+
++ bool          forEach(callback)
++ bool          forEachRangedRank(rankfrom, rankto)
++ bool          forEachRangedScore(minscore, maxscore)
+}
+
+class TopList
+{
+- SkipList skiplist_
+- std::unorderd_map<uint64_t, Data> data_map_
+
++ uint64_t size() const;
++ void     clear();
+
++ void         addData(Data& data);
++ void         updateInfos(DataType& data);
+
++ bool         incrScore(key, score);	
++ bool         decrScore(key, score);
++ uint64_t     getScore(key);
+
++ void         deleteByKey(key);
++ void         deleteByRank(rank);
++ void         deleteByRangedRank(rankfrom, rankto);
++ void         deleteByRangedScore(minscore, maxscore);
+
++ uint64_t     getIncrRankByKey(key);
++ uint64_t     getDecrRankByKey(key);
++ uint64_t     getIncrRankByScore(score);
++ uint64_t     getDecrRankByScore(score);
+
++ DataType     getDataByKey(key);
++ DataType     getDataByIncrRank(rank);
++ DataType     getDataByDecrRank(rank);
+
++ bool         forEach(FUNC&& cb);
++ bool         forEachByRangedRank( rankfrom, rankto, FUNC&& cb);
++ bool         forEachByRangedScore(minscore, maxscore, FUNC&& cb);
+}
+@enduml

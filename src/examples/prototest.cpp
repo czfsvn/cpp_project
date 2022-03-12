@@ -1,11 +1,21 @@
-#include <iostream>
 #include "addressbook.pb.h"
+#include <iostream>
 
 using namespace std;
 
-int main()
+namespace test_proto
 {
-    msg::AddressBook addr;
-    std::cout << "test proto\n";
-    return 0;
-}
+    void main()
+    {
+        msg::AddressBook addr;
+        std::cout << "test proto\n";
+    }
+}  // namespace test_proto
+
+namespace ns_proto
+{
+    void main()
+    {
+        test_proto::main();
+    }
+}  // namespace ns_proto

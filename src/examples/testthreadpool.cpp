@@ -1,7 +1,7 @@
-#include <iostream>
-#include "Misc.h"
 #include "Global.h"
+#include "Misc.h"
 #include "ThreadPool.h"
+#include <iostream>
 
 using namespace std;
 using namespace cncpp;
@@ -17,32 +17,27 @@ namespace test_threadpool
     class TestTask : public Task
     {
     public:
-        TestTask(uint64_t idx)
-            : task_id(idx)
+        TestTask(uint64_t idx) : task_id(idx)
         {
-            std::cout << "test task thread: " << getThreadId() << ", construct: " << task_id
-                      << std::endl;
+            std::cout << "test task thread: " << getThreadId() << ", construct: " << task_id << std::endl;
         }
 
         ~TestTask()
         {
-            std::cout << "test task thread: " << getThreadId() << ", destruct: " << task_id
-                      << std::endl;
+            std::cout << "test task thread: " << getThreadId() << ", destruct: " << task_id << std::endl;
         }
 
         virtual bool work()
         {
-            std::cout << "test task thread: " << getThreadId() << ", work: " << task_id
-                      << std::endl;
-            cncpp::sleepfor_microseconds(rnd_.Next() % 1000);
+            std::cout << "test task thread: " << getThreadId() << ", work: " << task_id << std::endl;
+            cncpp::sleepfor_microseconds(rnd.Next() % 1000);
             return true;
         }
 
         virtual bool done()
         {
-            std::cout << "test task thread: " << getThreadId() << ", done: " << task_id
-                      << std::endl;
-            cncpp::sleepfor_microseconds(rnd_.Next() % 1000);
+            std::cout << "test task thread: " << getThreadId() << ", done: " << task_id << std::endl;
+            cncpp::sleepfor_microseconds(rnd.Next() % 1000);
             return true;
         }
 
@@ -53,9 +48,7 @@ namespace test_threadpool
     class TestTaskThread : public cncpp::Thread
     {
     public:
-        TestTaskThread(cncpp::TaskPoolPtr ptr)
-            : pool_ptr_(ptr)
-        {}
+        TestTaskThread(cncpp::TaskPoolPtr ptr) : pool_ptr_(ptr) {}
         virtual void run() override
         {
             // pool_ptr_->addNewTask(std::make_shared<TestTask>(get_task_idx()));
@@ -75,10 +68,10 @@ namespace test_threadpool
         pool->init();
         pool->startAll();
 
-        TestTaskThread *test_thrd1 = new TestTaskThread(pool);
+        TestTaskThread* test_thrd1 = new TestTaskThread(pool);
         test_thrd1->start();
 
-        TestTaskThread *test_thrd2 = new TestTaskThread(pool);
+        TestTaskThread* test_thrd2 = new TestTaskThread(pool);
         test_thrd2->start();
 
         while (1)
@@ -97,10 +90,12 @@ namespace test_threadpool
         test();
         std::cout << "hello, test_threadpool:: main\n";
     }
-} // namespace test_threadpool
+}  // namespace test_threadpool
 
-int main()
+namespace ns_threadpool
 {
-    test_threadpool::main();
-    return 0;
-}
+    void main(int argc, char** argv)
+    {
+        test_threadpool::main();
+    }
+}  // namespace ns_threadpool

@@ -1,15 +1,57 @@
 cmake_minimum_required(VERSION 3.5)
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/examples/bin)
+#SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/examples/bin)
 
-add_executable(examples main.cpp boost_asio.cpp)
-target_link_libraries(examples ${LIBS})
+set(SKIPSRC 
+    MySkipList/skipmain.cpp 
+    MySkipList/skiplist.cpp 
+    MySkipList/TopList.cpp 
+    MySkipList/skiplist2.cpp
+    )
 
-add_executable(testproto prototest.cpp)
-target_link_libraries(testproto ${LIBS})
+set(TIMESRC 
+    TimeUtils/timetest.cpp
+    )
 
-add_executable(testmemory memorytest.cpp)
-target_link_libraries(testmemory ${LIBS})
+set(XML 
+    Xml/xmltest.cpp
+    )
 
-add_executable(testthreadpool testthreadpool.cpp)
-target_link_libraries(testthreadpool ${LIBS})
+set(CONVERT typeconvert/typeconvert.cpp)
+
+
+aux_source_directory(. SRCS)
+
+set(TARGET example)
+
+
+add_executable(${TARGET} 
+    ${SRCS}
+    ${SKIPSRC} 
+    ${TIMESRC}
+    ${XML}
+    ${CONVERT}
+    )
+
+target_link_libraries(${TARGET} ${LIBS})
+
+#add_executable(testproto prototest.cpp)
+#target_link_libraries(testproto ${LIBS})
+
+#add_executable(testmemory memorytest.cpp)
+#target_link_libraries(testmemory ${LIBS})
+
+#add_executable(testthreadpool testthreadpool.cpp)
+#target_link_libraries(testthreadpool ${LIBS})
+
+#add_executable(testcmdlines testcmdlines.cpp)
+#target_link_libraries(testcmdlines ${LIBS})
+
+#add_executable(testspd testspd.cpp)
+#target_link_libraries(testspd ${LIBS})
+
+#add_executable(testxml2 testxml2.cpp)
+#target_link_libraries(testxml2 ${LIBS})
+
+#add_executable(example example.cpp)
+#target_link_libraries(example ${LIBS})
