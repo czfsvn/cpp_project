@@ -1,5 +1,6 @@
 #include "EventCallback.h"
 #include "Properties.h"
+#include "StringUtil.h"
 #include "TypeDefine.h"
 #include <iostream>
 #include <list>

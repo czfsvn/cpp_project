@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TypeDefine.h"
+#include "StringUtil.h"
 #include <ext/hash_map>
 #include <list>
 #include <string.h>

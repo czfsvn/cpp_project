@@ -66,6 +66,6 @@ namespace cncpp
             return Uniform(1 << Uniform(max_log + 1));
         }
     };
-} // namespace cn
+} // namespace cncpp
 
 #endif

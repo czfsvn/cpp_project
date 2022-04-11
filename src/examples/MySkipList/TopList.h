@@ -934,21 +934,21 @@ namespace ns_toplist
         void deleteByRangedRank(const uint64_t rankfrom, const uint64_t rankto) override
         {
             sort_datas_.DeleteRangeByRankCB(rankfrom, rankto,
-                                            [this](const uint64_t key, const uint64_t score)
-                                            {
-                                                this->datas_map_.erase(key);
-                                                return true;
-                                            });
+                [this](const uint64_t key, const uint64_t score)
+                {
+                    this->datas_map_.erase(key);
+                    return true;
+                });
         }
 
         void deleteByRangedScore(const uint64_t minscore, const uint64_t maxscore) override
         {
             sort_datas_.DeleteRangeByScoreCB(minscore, maxscore,
-                                             [this](const uint64_t key, const uint64_t score)
-                                             {
-                                                 this->datas_map_.erase(key);
-                                                 return true;
-                                             });
+                [this](const uint64_t key, const uint64_t score)
+                {
+                    this->datas_map_.erase(key);
+                    return true;
+                });
         }
 
         uint64_t getIncrRankByKey(const uint64_t key) override
@@ -1016,14 +1016,14 @@ namespace ns_toplist
                 return false;
 
             sort_datas_.forEachRangedRank(rankfrom, rankto,
-                                          [this, &cb](const uint64_t key, const uint64_t score)
-                                          {
-                                              DataSharedPtr ptr = this->getDataByKey(key);
-                                              if (!ptr || !cb(ptr))
-                                                  return false;
+                [this, &cb](const uint64_t key, const uint64_t score)
+                {
+                    DataSharedPtr ptr = this->getDataByKey(key);
+                    if (!ptr || !cb(ptr))
+                        return false;
 
-                                              return true;
-                                          });
+                    return true;
+                });
 
             return true;
         }
@@ -1034,14 +1034,14 @@ namespace ns_toplist
                 return false;
 
             sort_datas_.forEachRangedScore(minscore, maxscore,
-                                           [this, &cb](const uint64_t key, const uint64_t score)
-                                           {
-                                               DataSharedPtr ptr = this->getDataByKey(key);
-                                               if (!ptr || !cb(ptr))
-                                                   return false;
+                [this, &cb](const uint64_t key, const uint64_t score)
+                {
+                    DataSharedPtr ptr = this->getDataByKey(key);
+                    if (!ptr || !cb(ptr))
+                        return false;
 
-                                               return true;
-                                           });
+                    return true;
+                });
             return true;
         }
     };

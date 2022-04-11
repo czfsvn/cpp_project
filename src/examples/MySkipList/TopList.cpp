@@ -141,33 +141,6 @@ namespace ns_toplist
             test_deleteByRangedRank();
         else if (testtype == "test_deleteByRangedScore")
             test_deleteByRangedScore();
-
-        /*()
-        test_getIncrRankByKey();
-        test_getDecrRankByKey();
-        test_getIncrRankByScore();
-        test_getDecrRankByScore();
-
-        // return;
-        test_updateInfo();
-
-        test_getIncrRankByKey();
-        test_getDecrRankByKey();
-        // test_getIncrRankByScore();
-        // test_getDecrRankByScore();
-
-        test_incrScore();
-        test_decrScore();
-
-        test_forEachByIncr();
-        test_forEachByDecr();
-
-
-        test_forEachByRangedRank();
-        test_forEachByRangedScore();
-
-        test_deleteByKey();
-        */
     }
 
     BaseTopList<DataType>* createToplist(const std::string& type)
@@ -326,7 +299,8 @@ namespace ns_toplist
 
             const uint32_t rank = toplist->getIncrRankByScore(item.second->getScore());
             // assert(rank == iter->second);  // some key with same score
-            INFO("[test_getIncrRankByScore] key:{}, score: {}, keyrank: {}, scorerank: {}", item.first, item.second->getScore(), iter->second, rank);
+            INFO("[test_getIncrRankByScore] key:{}, score: {}, keyrank: {}, scorerank: {}", item.first, item.second->getScore(),
+                iter->second, rank);
         }
     }
 
@@ -343,7 +317,8 @@ namespace ns_toplist
             const uint32_t rank = toplist->getDecrRankByKey(item.second->getScore());
             // assert(rank == iter->second);
 
-            INFO("[test_getDecrRankByScore] key:{}, score: {}, keyrank: {}, scorerank: {}", item.first, item.second->getScore(), iter->second, rank);
+            INFO("[test_getDecrRankByScore] key:{}, score: {}, keyrank: {}, scorerank: {}", item.first, item.second->getScore(),
+                iter->second, rank);
         }
     }
 
@@ -431,12 +406,12 @@ namespace ns_toplist
 
             INFO("rank: {} ---> {}", from, to);
             toplist->forEachByRangedRank(from, to,
-                                         [](const DataPtr& data)
-                                         {
-                                             cncpp::sleepfor_nanoseconds(1);
-                                             INFO("[key: {}, score: {}]", data->getKey(), data->getScore());
-                                             return true;
-                                         });
+                [](const DataPtr& data)
+                {
+                    cncpp::sleepfor_nanoseconds(1);
+                    INFO("[key: {}, score: {}]", data->getKey(), data->getScore());
+                    return true;
+                });
         }
     }
     void test_forEachByRangedScore()
@@ -453,12 +428,12 @@ namespace ns_toplist
 
             INFO("score: {} ---> {}", from, to);
             toplist->forEachByRangedScore(from, to,
-                                          [](const DataPtr& data)
-                                          {
-                                              // cncpp::sleepfor_nanoseconds(1);
-                                              INFO("[key: {}, score: {}]", data->getKey(), data->getScore());
-                                              return true;
-                                          });
+                [](const DataPtr& data)
+                {
+                    // cncpp::sleepfor_nanoseconds(1);
+                    INFO("[key: {}, score: {}]", data->getKey(), data->getScore());
+                    return true;
+                });
         }
     }
 

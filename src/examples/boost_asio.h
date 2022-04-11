@@ -73,4 +73,14 @@ namespace ns_typeconvert
     void main();
 }
 
+namespace ns_uri
+{
+    void main();
+}  // namespace ns_uri
+
+namespace ns_encrypt
+{
+    void main();
+}
+
 #endif

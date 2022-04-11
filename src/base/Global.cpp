@@ -8,7 +8,8 @@ namespace cncpp
 
     uint32_t random()
     {
-        return rnd.Next();
+        static Random rnd_(0xdeadbeef);
+        return rnd_.Next();
     }
     /*
         void globle_init(const std::string& logwords)
@@ -22,4 +23,4 @@ namespace cncpp
             }
 
     }*/
-}  // namespace cncpp
+} // namespace cncpp

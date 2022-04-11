@@ -2,7 +2,7 @@
  * @Author: czf
  * @Date: 2022-03-01 10:17:01
  * @LastEditors: czf
- * @LastEditTime: 2022-03-03 10:11:01
+ * @LastEditTime: 2022-04-11 21:45:47
  * @FilePath: \cpp_project2022\src\examples\MySkipList\skiplist2.cpp
  * @Description:
  *
@@ -569,6 +569,7 @@ namespace ns_skip3
     // ./bin/example --type=vec/set/skip --op=insert/update --size=10
     void main_skip3(int argc, char** argv)
     {
-        ns_toplist3::main_toplist3(argc, argv);
+
+        // ns_toplist3::main_toplist3(argc, argv);  // cost time test
     }
 }  // namespace ns_skip3

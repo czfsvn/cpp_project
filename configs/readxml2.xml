@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UserData>
+
+    <UserAttr userid="uint32_t" name="std::string" container_="map" key_="userid" >
+        <Info directed="uint16_t" name="std::string" container_="vector" />
+    </UserAttr>
+
+    <School uid="uint32_t" name="std::string" container_="map" key_="uid" />
+    
+        <datas uid="uint32_t" name="std::string" />
+
+</UserData>
+

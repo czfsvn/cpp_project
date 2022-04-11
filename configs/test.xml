@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phone_books>
+    <phone id="1" name="Anker" tel="18923456" address="Shenzheng" />
+    <phone id="2" name="Jermey" tel="18623456" address="Beijing" />
+    <phone id="3" name="Lili" tel="31223873456" address="Shanghai" />
+
+    <bus id="10" name="10bus" tel="10223873456" address="changsha" >
+        <addr address="aaaaa" />
+        <addr address="bbb" />
+        <addr address="ccc" />
+    </bus>
+    
+    <bus id="11" name="11bus" tel="11223873456" address="wuhan" >
+        <addr address="dddd" />
+        <addr address="eeee" />
+        <addr address="fffff" />
+    </bus>
+    <bus id="12" name="12bus" tel="12223873456" address="qingdao" >
+        <addr address="ggg" />
+        <addr address="hhh" />
+        <addr address="iiii" />
+    </bus>
+</phone_books>

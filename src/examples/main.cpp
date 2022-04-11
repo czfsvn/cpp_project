@@ -2,7 +2,7 @@
  * @Author: czf
  * @Date: 2022-01-16 18:25:35
  * @LastEditors: czf
- * @LastEditTime: 2022-03-01 11:46:23
+ * @LastEditTime: 2022-04-04 17:13:53
  * @FilePath: \cpp_project2022\src\examples\main.cpp
  * @Description:
  *
@@ -27,14 +27,15 @@ int32_t main(int argc, char** argv)
     ns_memory::main(argc, argv);
     ns_proto::main();
     ns_memset::main(argc, argv);
+    ns_skip3::main_skip3(argc, argv);
 
-
-    test_skiplist::main_skiplist(argc, argv);
     */
 
-    // ns_skip3::main_skip3(argc, argv);
-
     // ns_timeutils::main();
-    ns_typeconvert::main();
+    // ns_typeconvert::main();
+
+    // ns_uri::main();
+
+    test_skiplist::main_skiplist(argc, argv);
     return 0;
 }

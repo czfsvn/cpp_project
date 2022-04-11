@@ -18,11 +18,15 @@ set(XML
     )
 
 set(CONVERT typeconvert/typeconvert.cpp)
+set(URI uriparser/test_uri_parser.cpp)
+set(ENCRYPT encrypt/test_encrypt.cpp)
 
 
 aux_source_directory(. SRCS)
 
 set(TARGET example)
+
+
 
 
 add_executable(${TARGET} 
@@ -31,6 +35,8 @@ add_executable(${TARGET}
     ${TIMESRC}
     ${XML}
     ${CONVERT}
+    ${URI}
+    ${ENCRYPT}
     )
 
 target_link_libraries(${TARGET} ${LIBS})
