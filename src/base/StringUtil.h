@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <spdlog/fmt/bundled/core.h>
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/bundled/ranges.h>
 
 namespace cncpp
 {
@@ -100,6 +103,34 @@ namespace cncpp
 
         cont.emplace_back(start, next);
         return cont;
+    }
+
+    std::string fmtTime(const uint32_t now);
+
+    template <typename... Args>
+    std::string format(const char* fmt, Args&&... args)
+    {
+        try
+        {
+            return fmt::format(fmt, args...);
+        }
+        catch (const std::exception& e)
+        {
+            return "";
+        }
+    }
+
+    template <typename... Args>
+    void print(const char* fmt, Args&&... args)
+    {
+        try
+        {
+            fmt::print(fmt, args...);
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "e:" << e.what() << std::endl;
+        }
     }
 
 }  // namespace cncpp

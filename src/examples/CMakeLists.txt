@@ -7,6 +7,7 @@ set(SKIPSRC
     MySkipList/skiplist.cpp 
     MySkipList/TopList.cpp 
     MySkipList/skiplist2.cpp
+    MySkipList/skiplist4.cpp
     )
 
 set(TIMESRC 
@@ -17,9 +18,14 @@ set(XML
     Xml/xmltest.cpp
     )
 
+set(FMT 
+    fmt/fmt.cpp
+    )
+
 set(CONVERT typeconvert/typeconvert.cpp)
 set(URI uriparser/test_uri_parser.cpp)
 set(ENCRYPT encrypt/test_encrypt.cpp)
+set(ALGOROTHM algorithm/algorithm.cpp)
 
 
 aux_source_directory(. SRCS)
@@ -37,6 +43,8 @@ add_executable(${TARGET}
     ${CONVERT}
     ${URI}
     ${ENCRYPT}
+    ${FMT}
+    ${ALGOROTHM}
     )
 
 target_link_libraries(${TARGET} ${LIBS})

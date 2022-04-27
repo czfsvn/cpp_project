@@ -23,4 +23,4 @@ namespace cncpp
             }
 
     }*/
-} // namespace cncpp
+}  // namespace cncpp

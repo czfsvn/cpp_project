@@ -8,6 +8,7 @@ namespace TimeUtils
     const static uint32_t kMinuteSeconds = 60;
     const static uint32_t kHourSeconds   = 3600;
     const static uint32_t kDaySeconds    = 24 * kHourSeconds;
+
     // 获取真实时间
     inline uint64_t getRealTimeSec()
     {

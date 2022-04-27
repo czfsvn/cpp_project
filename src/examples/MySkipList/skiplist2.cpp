@@ -2,16 +2,19 @@
  * @Author: czf
  * @Date: 2022-03-01 10:17:01
  * @LastEditors: czf
- * @LastEditTime: 2022-04-11 21:45:47
+ * @LastEditTime: 2022-04-16 18:09:31
  * @FilePath: \cpp_project2022\src\examples\MySkipList\skiplist2.cpp
  * @Description:
  *
  * Copyright (c) 2022 by 用户/公司名, All Rights Reserved.
  */
 #include "skiplist2.h"
+#include "StringUtil.h"
 #include "cmdline.h"
 #include "logger.h"
 #include <sstream>
+
+using namespace ns_toplist3;
 
 struct UserData
 {
@@ -54,6 +57,72 @@ bool operator==(const UserDataPtr& lhs, const UserDataPtr& rhs)
 {
     return lhs->score == rhs->score && lhs->age == rhs->age;
 }
+
+namespace
+{
+    uint32_t    max_size     = 0;
+    std::string toplist_type = {};
+
+    ns_toplist3::TopList<uint32_t, UserData>* toplist     = nullptr;
+    std::map<uint32_t, UserDataPtr>           origin_map  = {};
+    std::map<uint32_t, uint32_t>              rank_map    = {};  //< key, rank>
+    std::map<uint32_t, uint32_t>              revrank_map = {};  //< key, revrank>
+
+    uint32_t randOne()
+    {
+        const uint32_t ret = cncpp::random() % max_size + 1;
+        return ret;
+    }
+
+    void log_func(const std::string& func)
+    {
+        INFO("toplist type: [{}], function: {}   =====================", toplist_type, func);
+    }
+
+    cmdline::parser parse_line(int argc, char** argv)
+    {
+        cmdline::parser cmd_parser;
+        cmd_parser.add<std::string>("type", 't', "toplist type", false, "skip");
+        cmd_parser.add<uint32_t>("size", 's', "size of toplist", false, 10);
+        cmd_parser.add<std::string>("op", 'c', "test function case", false, "");
+
+        cmd_parser.parse_check(argc, argv);
+
+        return cmd_parser;
+    }
+
+    TopList<uint32_t, UserData>* createToplist(const std::string& toptype)
+    {
+        if (toptype == "vec")
+        {
+            toplist_type = "vector";
+            return new VecTopList<uint32_t, UserData>();
+        }
+        else if (toptype == "set")
+        {
+            toplist_type = "set";
+            return new SetTopList<uint32_t, UserData>();
+        }
+        else if (toptype == "skip")
+        {
+            toplist_type = "skiplist";
+            return new SkipTopList<uint32_t, UserData>();
+        }
+
+        return nullptr;
+    }
+
+    void test_fmt()
+    {
+        std::string           toptype = "vec";
+        std::string           op      = "insert";
+        std::vector<uint32_t> vec{ 0, 2, 3, 4 };
+        const std::string     vec_str = cncpp::format("vec={}", vec);
+        const std::string     fmtsrt  = cncpp::format("main_toplist3_v2 max_size={}, toptype={}, op={}", max_size, toptype, op);
+        cncpp::print("main_toplist3_v2 1 max_size={}, toptype={}, op={}\n", max_size, toptype, op);
+        cncpp::print("vec={}\n", vec);
+    }
+}  // namespace
 
 #if 0
 namespace ns_skiplist3
@@ -199,14 +268,6 @@ namespace ns_toplist3
 {
 #define FUNC log_func(__FUNCTION__)
 
-    uint32_t    max_size     = 0;
-    std::string toplist_type = {};
-
-    TopList<uint32_t, UserData>*    toplist     = nullptr;
-    std::map<uint32_t, UserDataPtr> origin_map  = {};
-    std::map<uint32_t, uint32_t>    rank_map    = {};  //< key, rank>
-    std::map<uint32_t, uint32_t>    revrank_map = {};  //< key, revrank>
-
     void init_toplist();
     void test_update();
     void test_deleteByKey();
@@ -217,38 +278,6 @@ namespace ns_toplist3
     void test_getRevRankByKey();
     void test_forEachRev();
     void test_forEachByRangedRank();
-
-    TopList<uint32_t, UserData>* createToplist(const std::string& toptype)
-    {
-        if (toptype == "vec")
-        {
-            toplist_type = "vector";
-            return new VecTopList<uint32_t, UserData>();
-        }
-        else if (toptype == "set")
-        {
-            toplist_type = "set";
-            return new SetTopList<uint32_t, UserData>();
-        }
-        else if (toptype == "skip")
-        {
-            toplist_type = "skiplist";
-            return new SkipTopList<uint32_t, UserData>();
-        }
-
-        return nullptr;
-    }
-
-    void log_func(const std::string& func)
-    {
-        INFO("toplist type: [{}], function: {}   =====================", toplist_type, func);
-    }
-
-    uint32_t randOne()
-    {
-        const uint32_t ret = cncpp::random() % max_size + 1;
-        return ret;
-    }
 
     void cacheRankList()
     {
@@ -322,18 +351,6 @@ namespace ns_toplist3
 
             INFO("init_toplist: {}, \tdata: {}", new_id, ptr->dump());
         }
-    }
-
-    cmdline::parser parse_line(int argc, char** argv)
-    {
-        cmdline::parser cmd_parser;
-        cmd_parser.add<std::string>("type", 't', "toplist type", false, "skip");
-        cmd_parser.add<uint32_t>("size", 's', "size of toplist", false, 10);
-        cmd_parser.add<std::string>("op", 'c', "test function case", false, "");
-
-        cmd_parser.parse_check(argc, argv);
-
-        return cmd_parser;
     }
 
     void main_toplist3(int argc, char** argv)
@@ -564,12 +581,139 @@ namespace ns_toplist3
 
 }  // namespace ns_toplist3
 
+#if 0
+namespace ns_toplist3_v2
+{
+#define FUNC log_func(__FUNCTION__)
+
+    // uint32_t    max_size     = 0;
+    std::string toplist_type = {};
+
+    TopList<uint32_t, UserData>*    toplist     = nullptr;
+    std::map<uint32_t, UserDataPtr> origin_map  = {};
+    std::map<uint32_t, uint32_t>    rank_map    = {};  //< key, rank>
+    std::map<uint32_t, uint32_t>    revrank_map = {};  //< key, revrank>
+
+    void init_toplist();
+    void test_update();
+    void test_deleteByKey();
+    void test_deleteByRank();
+    void test_deleteByRangedRank();
+    void test_getDataByRank();
+    void test_getRankByKey();
+    void test_getRevRankByKey();
+    void test_forEachRev();
+    void test_forEachByRangedRank();
+
+    void main_toplist3_v2(int argc, char** argv)
+    {
+        cmdline::parser cmd_parser = parse_line(argc, argv);
+
+        max_size                   = cmd_parser.get<std::uint32_t>("size");
+        const std::string& toptype = cmd_parser.get<std::string>("type");
+        const std::string& op      = cmd_parser.get<std::string>("op");
+
+        toplist = createToplist(toptype);
+        assert(toplist);
+        if (!toplist)
+            return;
+
+        init_toplist();
+        forEachRank();
+        cacheRankList();
+        cacheRevRankList();
+
+        if (op == "test_update")
+        {
+            test_update();  // all workd well on size=10
+        }
+        /*
+        else if (op == "test_getDataByRank")
+        {
+            test_getDataByRank();  // all workd well on size=10
+        }
+        else if (op == "test_getRankByKey")
+        {
+            test_getRankByKey();  // all workd well on size=10
+        }
+        else if (op == "test_getRevRankByKey")
+        {
+            test_getRevRankByKey();  // all workd well on size=10
+        }
+        else if (op == "test_deleteByKey")
+        {
+            test_deleteByKey();
+        }
+        else if (op == "test_deleteByRank")
+        {
+            test_deleteByRank();
+        }
+        else if (op == "test_deleteByRangedRank")
+        {
+            test_deleteByRangedRank();
+        }
+        else if (op == "test_forEachByRangedRank")
+        {
+            test_forEachByRangedRank();
+        }
+        */
+        forEachRank();
+    }
+
+    void init_toplist()
+    {
+        FUNC;
+        for (uint32_t i = 0; i < max_size; i++)
+        {
+            const uint32_t new_id = i + 10000;
+            UserDataPtr    ptr    = std::make_shared<UserData>();
+            ptr->userid           = new_id;
+            ptr->age              = randOne() % 5 + 1;
+            ptr->score            = randOne() % 5 + 1;
+            toplist->insert(ptr->userid, ptr);
+            origin_map.emplace(ptr->userid, ptr);
+
+            INFO("init_toplist: {}, \tdata: {}", new_id, ptr->dump());
+        }
+    }
+
+    void test_update()
+    {
+        FUNC;
+        for (uint32_t i = 0; i < max_size; i++)
+        {
+            const uint32_t new_id = i + 10000;
+            auto           iter   = origin_map.find(new_id);
+            if (iter == origin_map.end())
+            {
+                assert(false);
+                continue;
+            }
+
+            const uint32_t old_score = iter->second->score;
+
+            UserDataPtr ptr = std::make_shared<UserData>();
+            ptr->userid     = new_id;
+            ptr->age        = randOne();
+            ptr->score      = randOne();
+
+            toplist->insert(ptr->userid, ptr);
+
+            assert(ptr->score + old_score == iter->second->score);
+
+            INFO("test_update: key:{}, old_score:{}, newscore:{}", new_id, old_score, iter->second->score);
+        }
+    }
+}  // namespace ns_toplist3_v2
+#endif
+
 namespace ns_skip3
 {
     // ./bin/example --type=vec/set/skip --op=insert/update --size=10
+    // ./bin/example --type=skip --op=insert --size=10
     void main_skip3(int argc, char** argv)
     {
-
-        // ns_toplist3::main_toplist3(argc, argv);  // cost time test
+        ns_toplist3::main_toplist3(argc, argv);  // cost time test
+        // ns_toplist3_v2::main_toplist3_v2(argc, argv);
     }
 }  // namespace ns_skip3

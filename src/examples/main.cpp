@@ -2,19 +2,16 @@
  * @Author: czf
  * @Date: 2022-01-16 18:25:35
  * @LastEditors: czf
- * @LastEditTime: 2022-04-04 17:13:53
+ * @LastEditTime: 2022-04-25 20:50:52
  * @FilePath: \cpp_project2022\src\examples\main.cpp
  * @Description:
  *
  * Copyright (c) 2022 by 用户/公司名, All Rights Reserved.
  */
 
-#include "MySkipList/skiplist.h"
 #include "boost_asio.h"
 
-using namespace std;
-
-int32_t main(int argc, char** argv)
+int main(int argc, char** argv)
 {
 
     // std::cout << "Hello, main\n";
@@ -27,7 +24,7 @@ int32_t main(int argc, char** argv)
     ns_memory::main(argc, argv);
     ns_proto::main();
     ns_memset::main(argc, argv);
-    ns_skip3::main_skip3(argc, argv);
+
 
     */
 
@@ -36,6 +33,11 @@ int32_t main(int argc, char** argv)
 
     // ns_uri::main();
 
-    test_skiplist::main_skiplist(argc, argv);
+    // test_skiplist::main_skiplist(argc, argv);
+    // ns_fmt::main();
+
+    // ns_skip3::main_skip3(argc, argv);
+    // ns_algorithm::main();
+    ns_skip4::main(argc, argv);
     return 0;
 }

@@ -2,7 +2,7 @@
  * @Author: czf
  * @Date: 2022-01-16 18:25:35
  * @LastEditors: czf
- * @LastEditTime: 2022-03-01 11:46:27
+ * @LastEditTime: 2022-04-21 16:07:39
  * @FilePath: \cpp_project2022\src\examples\boost_asio.h
  * @Description: all test namespace of examples
  *
@@ -58,6 +58,11 @@ namespace ns_skip3
     void main_skip3(int argc, char** argv);
 }
 
+namespace ns_skip4
+{
+    void main(int argc, char** argv);
+}
+
 namespace ns_timeutils
 {
     void main();
@@ -79,6 +84,16 @@ namespace ns_uri
 }  // namespace ns_uri
 
 namespace ns_encrypt
+{
+    void main();
+}
+
+namespace ns_fmt
+{
+    void main();
+}
+
+namespace ns_algorithm
 {
     void main();
 }

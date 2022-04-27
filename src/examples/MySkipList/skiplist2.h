@@ -295,7 +295,7 @@ namespace ns_skiplist3
         {
             while (x && x->next_nodes[i].next
                    && (x->next_nodes[i].next->score < curscore
-                       || (x->next_nodes[i].next->score == curscore /* && (x->next_nodes[i].next->key < key)*/)))
+                       || (x->next_nodes[i].next->score == curscore && (x->next_nodes[i].next->key < key))))
             // while (x && x->next_nodes[i].next && (x->next_nodes[i].next->score < curscore))
             {
                 x = x->next_nodes[i].next;

@@ -105,4 +105,14 @@ namespace cncpp
 
         return res;
     }
+
+    std::string fmtTime(time_t now)
+    {
+        if (!now)
+            now = std::time(nullptr);
+
+        return "";
+        // todo: fixit
+        // return fmt::format("{:%Y-%m-%d %H:%M:%S}", *std::localtime(&now));
+    }
 }  // namespace cncpp

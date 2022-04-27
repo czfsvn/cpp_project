@@ -11,7 +11,8 @@ function testtoplist()
     echo "container: $2, times: $3 function: $1"
     echo $cmd
 
-    for loop in 1 2 3 4 5 6 7 8 9 10 11 12
+    #for loop in 1 2 3 4 5 6 7 8 9 10 11 12
+    for loop in {0..200}
     do
         $cmd
         sleep 3
@@ -39,11 +40,12 @@ function call_looptimes()
 
 function call_looptimes1()
 {
-    for loop in 100 500 1000 2000 5000 8000 10000 20000 30000 50000
+    #for loop in 100 500 1000 2000 5000 8000 10000 20000 30000 50000
+    for loop in 100 500 
     do
         echo "loop times: $loop -------------------------------------"
         call_test $1 $loop 
-        sleep 10
+        sleep 1
     done
 }
 
@@ -54,14 +56,14 @@ function call_loopskip()
     do
         echo "loop times: $loop -------------------------------------"  
         testtoplist $1 skip $loop
-        sleep 10
+        sleep 1
     done
 }
 
 function call_allfunc()
 {
 
-    for loop in test_update test_getDataByRank test_getRankByKey test_getRevRankByKey  
+    for loop in test_update test_getDataByRank test_getRankByKey test_getRevRankByKey foreach 
     do
         echo "loop times: $loop -------------------------------------"  
         echo "call_looptimes1 $loop > $loop"

@@ -84,11 +84,13 @@ if(CMAKE_DEBUG) #
     set(CMAKE_BUILD_TYPE "Debug")
 else()
     # string(APPEND C_OPTIONS " -MD")
-    set(CMAKE_BUILD_TYPE "Release")
+    #set(CMAKE_BUILD_TYPE "Release")
     #set(CMAKE_BUILD_TYPE "RelWithDebInfo")
-    #set(CMAKE_BUILD_TYPE "MinSizeRel")
+    set(CMAKE_BUILD_TYPE "MinSizeRel")
     add_definitions (-D _RELEASE_)
 endif()
+
+add_definitions(-D FMT_HEADER_ONLY)
 
 message(STATUS "--------Build type: [${CMAKE_BUILD_TYPE}] ------\n")
 #message(STATUS "C flags, Debug configuration: ${CMAKE_C_FLAGS_DEBUG}")
@@ -99,6 +101,7 @@ message(STATUS "--------Build type: [${CMAKE_BUILD_TYPE}] ------\n")
 #message(STATUS "C++ flags, Release configuration: ${CMAKE_CXX_FLAGS_RELEASE}")
 #message(STATUS "C++ flags, Release configuration with Debug info: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 #message(STATUS "C++ flags, minimal Release configuration: ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+
 
 set(CXX_FLAGS
     #-fno-elide-constructors
