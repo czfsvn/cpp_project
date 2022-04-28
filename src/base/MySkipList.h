@@ -2,7 +2,7 @@
  * @Author: czf
  * @Date: 2022-04-16 18:47:22
  * @LastEditors: czf
- * @LastEditTime: 2022-04-25 20:42:57
+ * @LastEditTime: 2022-04-28 10:23:45
  * @FilePath: \cpp_project2022\src\base\MySkipList.h
  * @Description:
  *
@@ -28,7 +28,6 @@ namespace cncpp
 
         struct Node
         {
-
             struct NextNode
             {
                 uint64_t span = 0;
@@ -239,7 +238,7 @@ namespace cncpp
             rank[i] = (i == (this->level_ - 1) ? 0 : rank[i + 1]);
             while (node && node->next_nodes[i].next
                    && (node->next_nodes[i].next->data < data
-                       || (node->next_nodes[i].next->data == data && (node->next_nodes[i].next->key < key))))
+                       /* || (node->next_nodes[i].next->data == data && (node->next_nodes[i].next->key < key))*/))
             {
                 rank[i] += node->next_nodes[i].span;
                 node = node->next_nodes[i].next;
@@ -300,7 +299,7 @@ namespace cncpp
         {
             while (x && x->next_nodes[i].next
                    && (x->next_nodes[i].next->data < curdata
-                       || (x->next_nodes[i].next->data == curdata && (x->next_nodes[i].next->key < key))))
+                       /*|| (x->next_nodes[i].next->data == curdata && (x->next_nodes[i].next->key < key))*/))
             {
                 x = x->next_nodes[i].next;
             }
@@ -358,16 +357,17 @@ namespace cncpp
         {
             while (x && x->next_nodes[i].next
                    && (x->next_nodes[i].next->data < data
-                       || (x->next_nodes[i].next->data == data && x->next_nodes[i].next->key <= key)))
+                       /*|| (x->next_nodes[i].next->data == data && x->next_nodes[i].next->key <= key)*/))
             {
                 rank += x->next_nodes[i].span;
                 x = x->next_nodes[i].next;
             }
 
             /* x might be equal to zsl->header, so test if obj is non-NULL */
-            if (x->key == key && x->data == data)
+            Node* xNext = (x ? x->next_nodes[0].next : nullptr);
+            if (xNext && xNext->key == key && xNext->data == data)
             {
-                return rank;
+                return rank + 1;
             }
         }
         return 0;
@@ -403,7 +403,6 @@ namespace cncpp
         node->next_nodes.reserve(level);
         for (uint16_t idx = 0; idx < level; idx++)
         {
-            // node->next_nodes.emplace_back(Node::NextNode());
             node->next_nodes[idx].span = 0;
             node->next_nodes[idx].next = nullptr;
         }
@@ -468,7 +467,7 @@ namespace cncpp
         {
             while (x && x->next_nodes[i].next
                    && (x->next_nodes[i].next->data < data
-                       || (x->next_nodes[i].next->data == data && (x->next_nodes[i].next->key < key))))
+                       /* || (x->next_nodes[i].next->data == data && (x->next_nodes[i].next->key < key))*/))
             {
                 x = x->next_nodes[i].next;
             }

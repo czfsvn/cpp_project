@@ -2,7 +2,7 @@
  * @Author: czf
  * @Date: 2022-04-16 18:49:54
  * @LastEditors: czf
- * @LastEditTime: 2022-04-16 19:12:21
+ * @LastEditTime: 2022-04-28 17:58:04
  * @FilePath: \cpp_project2022\src\base\MyToplist.h
  * @Description:
  *
@@ -30,11 +30,10 @@ namespace cncpp
         std::unordered_map<uint64_t, DataType> datas_map_ = {};
 
     public:
-        virtual void insert(const KeyType& key, const DataType& data) = 0;
-        // virtual bool updateData(const KeyType& key, const DataType& data) = 0;
+        virtual void refreshItem(const KeyType& key, const DATA& data)     = 0;
+        virtual void refreshItem(const KeyType& key, const DataType& data) = 0;
 
-        virtual uint32_t deleteByKey(const KeyType& key) = 0;
-        // virtual uint32_t deleteByData(const DataType& key)                              = 0;
+        virtual uint32_t deleteByKey(const KeyType& key)                                = 0;
         virtual uint32_t deleteByRank(const uint64_t& rank)                             = 0;
         virtual uint32_t deleteByRank(const uint64_t& rankfrom, const uint64_t& rankto) = 0;
 
@@ -81,10 +80,10 @@ namespace cncpp
         std::vector<DataType> cont_ = {};
 
     public:
-        void insert(const KeyType& key, const DataType& data) override;
+        void refreshItem(const KeyType& key, const DATA& data) override;
+        void refreshItem(const KeyType& key, const DataType& data) override;
 
         uint32_t deleteByKey(const KeyType& key) override;
-        // uint32_t deleteByData(const DataType& key) override;
         uint32_t deleteByRank(const uint64_t& rank) override;
         uint32_t deleteByRank(const uint64_t& rankfrom, const uint64_t& rankto) override;
 
@@ -113,10 +112,10 @@ namespace cncpp
         std::set<DataType> cont_ = {};
 
     public:
-        void insert(const KeyType& key, const DataType& data) override;
+        void refreshItem(const KeyType& key, const DATA& data) override;
+        void refreshItem(const KeyType& key, const DataType& data) override;
 
         uint32_t deleteByKey(const KeyType& key) override;
-        // uint32_t deleteByData(const DataType& key) override;
         uint32_t deleteByRank(const uint64_t& rank) override;
         uint32_t deleteByRank(const uint64_t& rankfrom, const uint64_t& rankto) override;
 
@@ -142,10 +141,10 @@ namespace cncpp
         SkipList<KeyType, DataType> cont_ = {};
 
     public:
-        void insert(const KeyType& key, const DataType& data) override;
+        void refreshItem(const KeyType& key, const DATA& data) override;
+        void refreshItem(const KeyType& key, const DataType& data) override;
 
         uint32_t deleteByKey(const KeyType& key) override;
-        // uint32_t deleteByData(const DataType& key) override;
         uint32_t deleteByRank(const uint64_t& rank) override;
         uint32_t deleteByRank(const uint64_t& rankfrom, const uint64_t& rankto) override;
 
@@ -166,7 +165,7 @@ namespace cncpp
     }
 
     template <typename KEY, typename DATA>
-    void VecTopList<KEY, DATA>::insert(const KeyType& key, const DataType& data)
+    void VecTopList<KEY, DATA>::refreshItem(const KeyType& key, const DataType& data)
     {
         auto iter = this->datas_map_.find(key);
         if (iter == this->datas_map_.end())
@@ -177,7 +176,27 @@ namespace cncpp
         }
         else
         {
-            // it worked well !!
+            iter->second += data;
+            sortall();
+        }
+    }
+
+    template <typename KEY, typename DATA>
+    void VecTopList<KEY, DATA>::refreshItem(const KeyType& key, const DATA& data)
+    {
+        auto iter = this->datas_map_.find(key);
+        if (iter == this->datas_map_.end())
+        {
+            // it worked well!!
+            DataType ptr = std::make_shared<DATA>();
+            *ptr         = data;
+
+            this->datas_map_.emplace(key, ptr);
+            cont_.emplace_back(ptr);
+            sortall();
+        }
+        else
+        {
             iter->second += data;
             sortall();
         }
@@ -311,7 +330,7 @@ namespace cncpp
 
     // set
     template <typename KEY, typename DATA>
-    void SetTopList<KEY, DATA>::insert(const KeyType& key, const DataType& data)
+    void SetTopList<KEY, DATA>::refreshItem(const KeyType& key, const DataType& data)
     {
         auto iter = this->datas_map_.find(key);
         if (iter == this->datas_map_.end())
@@ -321,7 +340,27 @@ namespace cncpp
         }
         else
         {
+            this->cont_.erase(iter->second);
+            iter->second += data;
+            this->cont_.emplace(iter->second);
+        }
+    }
+
+    template <typename KEY, typename DATA>
+    void SetTopList<KEY, DATA>::refreshItem(const KeyType& key, const DATA& data)
+    {
+        auto iter = this->datas_map_.find(key);
+        if (iter == this->datas_map_.end())
+        {
             // it worked well!!
+            DataType ptr = std::make_shared<DATA>();
+            *ptr         = data;
+
+            this->datas_map_.emplace(key, ptr);
+            this->cont_.emplace(ptr);
+        }
+        else
+        {
             this->cont_.erase(iter->second);
             iter->second += data;
             this->cont_.emplace(iter->second);
@@ -335,7 +374,6 @@ namespace cncpp
         if (iter == this->datas_map_.end())
             return 0;
 
-        // todo: check worked ?
         this->cont_.erase(iter->second);
         this->datas_map_.erase(iter);
         return 1;
@@ -454,13 +492,33 @@ namespace cncpp
     // skiplist ----------------------------------------------------------------
 
     template <typename KEY, typename DATA>
-    void SkipTopList<KEY, DATA>::insert(const KeyType& key, const DataType& data)
+    void SkipTopList<KEY, DATA>::refreshItem(const KeyType& key, const DataType& data)
     {
         auto iter = this->datas_map_.find(key);
         if (iter == this->datas_map_.end())
         {
             this->datas_map_.emplace(key, data);
             this->cont_.Insert(key, data);
+        }
+        else
+        {
+            this->cont_.Delete(key, iter->second);
+            iter->second += data;
+            this->cont_.Insert(key, iter->second);
+        }
+    }
+
+    template <typename KEY, typename DATA>
+    void SkipTopList<KEY, DATA>::refreshItem(const KeyType& key, const DATA& data)
+    {
+        auto iter = this->datas_map_.find(key);
+        if (iter == this->datas_map_.end())
+        {
+            DataType ptr = std::make_shared<DATA>();
+            *ptr         = data;
+
+            this->datas_map_.emplace(key, ptr);
+            this->cont_.Insert(key, ptr);
         }
         else
         {

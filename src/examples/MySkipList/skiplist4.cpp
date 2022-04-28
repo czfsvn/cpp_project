@@ -2,7 +2,7 @@
  * @Author: czf
  * @Date: 2022-04-16 17:49:00
  * @LastEditors: czf
- * @LastEditTime: 2022-04-25 22:17:41
+ * @LastEditTime: 2022-04-28 17:56:51
  * @FilePath: \cpp_project2022\src\examples\MySkipList\skiplist4.cpp
  * @Description:
  *
@@ -26,7 +26,7 @@ namespace
         std::string dump() const
         {
             std::stringstream oss;
-            oss << "[" << userid << ", \t" << score << ", \t" << age << "]";
+            oss << "[" << userid << ", " << score << ", " << age << "]";
             return oss.str();
         }
 
@@ -45,7 +45,7 @@ namespace
         if (lhs->age != rhs->age)
             return lhs->age < rhs->age;
 
-        return lhs->userid < rhs->userid;
+        return lhs->userid > rhs->userid;
     }
 
     UserDataPtr& operator+=(UserDataPtr& lhs, const UserDataPtr& rhs)
@@ -54,11 +54,23 @@ namespace
         return lhs;
     }
 
+    UserDataPtr& operator+=(UserDataPtr& lhs, const UserData& rhs)
+    {
+        lhs->score += rhs.score;
+        return lhs;
+    }
+
+    bool equalData(const UserDataPtr& lhs, const UserDataPtr& rhs)
+    {
+        return lhs->userid == rhs->userid && lhs->score == rhs->score && lhs->age == rhs->age;
+    }
+
+    /*
     bool operator==(const UserDataPtr& lhs, const UserDataPtr& rhs)
     {
         return lhs->score == rhs->score && lhs->age == rhs->age;
     }
-
+    */
 }  // namespace
 
 namespace
@@ -79,8 +91,6 @@ namespace
         // static cncpp::Random rnd_(0xdeadbeef);
         static cncpp::Random rnd_(time(NULL));
         return rnd_.Next() % max_size + 1;
-        // const uint32_t ret = cncpp::random() % max_size + 1;
-        // return ret;
     }
 
     void log_func(const std::string& func)
@@ -120,7 +130,6 @@ namespace
 
         return nullptr;
     }
-
 }  // namespace
 
 namespace ns_toplist4
@@ -136,13 +145,26 @@ namespace ns_toplist4
     void test_forEachRev();
     void test_forEachByRangedRank();
 
+    template <typename T>
+    void dump(T& cont, const std::string& log)
+    {
+        INFO("dump: {}", log);
+        uint32_t rank = 0;
+        cont->forEach(
+            [&rank](const UserDataPtr& data)
+            {
+                INFO("rank: {}, \tdata: {}", ++rank, data->dump());
+                return true;
+            });
+    }
+
     void cacheRankList()
     {
         // BLOCK_COST;
 
         rank_map.clear();
         uint32_t rank = 0;
-        toplist->forEach(
+        toplist2->forEach(
             [&rank](const UserDataPtr& data)
             {
                 rank_map.emplace(data->userid, ++rank);
@@ -156,7 +178,7 @@ namespace ns_toplist4
 
         revrank_map.clear();
         uint32_t rank = 0;
-        toplist->forEachRev(
+        toplist2->forEachRev(
             [&rank](const UserDataPtr& data)
             {
                 revrank_map.emplace(data->userid, ++rank);
@@ -176,9 +198,46 @@ namespace ns_toplist4
 
                 auto iter = origin_map.find(data->userid);
                 assert(iter != origin_map.end());
-                assert(iter->second == data);
+                assert(equalData(iter->second, data));
                 return true;
             });
+    }
+
+#define DMP_CONT(x, y)                                         \
+    dump((x), cncpp::format("{}:{}", __FUNCTION__, __LINE__)); \
+    dump((y), cncpp::format("{}:{}", __FUNCTION__, __LINE__)); \
+    assert(false);                                             \
+    exit(1);
+
+    template <typename CONT1, typename CONT2>
+    bool checkEqual(CONT1* cont1, CONT2* cont2)
+    {
+#ifdef _RELEASE_
+        // return true;
+#endif
+        uint32_t rank = 0;
+        cont1->forEach(
+            [&rank, cont2, cont1](const UserDataPtr& data)
+            {
+                rank++;
+                const uint32_t rank2 = cont2->getRankByKey(data->getKey());
+                if (rank != rank2)
+                {
+                    DMP_CONT(cont1, cont2);
+                    return false;
+                }
+
+                const UserDataPtr& ptr = cont2->getDataByRank(rank);
+                if (!equalData(data, ptr))
+                {
+                    DMP_CONT(cont1, cont2);
+                    return false;
+                }
+
+                return true;
+            });
+
+        return rank == cont1->size() && rank == cont2->size();
     }
 
     void test_forEachRev()
@@ -186,7 +245,7 @@ namespace ns_toplist4
         FUNC;
         BLOCK_COST;
         uint32_t rank = 0;
-        toplist->forEachRev(
+        toplist2->forEachRev(
             [&rank](const UserDataPtr& data)
             {
                 INFO("rank: {}, \tdata: {}", ++rank, data->dump());
@@ -209,19 +268,28 @@ namespace ns_toplist4
             UserDataPtr    ptr    = std::make_shared<UserData>();
             ptr->userid           = new_id;
             ptr->age              = randOne();
-            ptr->score            = randOne();
-            toplist->insert(ptr->userid, ptr);
+            ptr->score            = 10;  // randOne();
+            toplist->refreshItem(ptr->userid, ptr);
             origin_map.emplace(ptr->userid, ptr);
 
-            /*
             {
                 UserDataPtr ptr2 = std::make_shared<UserData>();
                 ptr2->userid     = ptr->userid;
                 ptr2->age        = ptr->age;
                 ptr2->score      = ptr->score;
-                toplist2->insert(ptr2->userid, ptr2);
+                toplist2->refreshItem(ptr2->userid, ptr2);
             }
-            */
+
+            if (!checkEqual(toplist2, toplist))
+            {
+                DMP_CONT(toplist2, toplist);
+            }
+
+            if (!checkEqual(toplist, toplist2))
+            {
+                DMP_CONT(toplist, toplist2);
+            }
+
             INFO("init_toplist: {}, \tdata: {}", new_id, ptr->dump());
         }
     }
@@ -247,7 +315,25 @@ namespace ns_toplist4
             ptr->age        = randOne();
             ptr->score      = randOne();
 
-            toplist->insert(ptr->userid, ptr);
+            toplist->refreshItem(ptr->userid, *ptr);
+
+            {
+                UserDataPtr ptr2 = std::make_shared<UserData>();
+                ptr2->userid     = ptr->userid;
+                ptr2->age        = ptr->age;
+                ptr2->score      = ptr->score;
+                toplist2->refreshItem(ptr2->userid, *ptr2);
+            }
+
+            if (!checkEqual(toplist2, toplist))
+            {
+                DMP_CONT(toplist, toplist2);
+            }
+
+            if (!checkEqual(toplist, toplist2))
+            {
+                DMP_CONT(toplist2, toplist);
+            }
 
             assert(ptr->score + old_score == iter->second->score);
 
@@ -277,18 +363,17 @@ namespace ns_toplist4
             }
 
             assert(iter->second == (i + 1));
-            /*
+
             {
                 UserDataPtr ptr2 = toplist2->getDataByRank(i + 1);
-                if (!ptr)
+                if (!ptr2)
                 {
                     assert(false);
                     continue;
                 }
-                assert(ptr2->userid == ptr->userid);
-                assert(ptr2 == ptr);
+
+                assert(equalData(ptr, ptr2));
             }
-            */
         }
     }
 
@@ -306,8 +391,8 @@ namespace ns_toplist4
             assert(iter->second == rank);
 
             {
-                // const uint32_t rank2 = toplist2->getRankByKey(origin.first);
-                // assert(iter->second == rank2);
+                const uint32_t rank2 = toplist2->getRankByKey(origin.first);
+                assert(iter->second == rank2);
             }
         }
     }
@@ -326,8 +411,8 @@ namespace ns_toplist4
             assert(iter->second == rank);
 
             {
-                // const uint32_t rank2 = toplist2->getRevRankByKey(origin.first);
-                // assert(iter->second == rank2);
+                const uint32_t rank2 = toplist2->getRevRankByKey(origin.first);
+                assert(iter->second == rank2);
             }
         }
     }
@@ -372,6 +457,16 @@ namespace ns_toplist4
         FUNC;
         BLOCK_COST;
 
+        if (!checkEqual(toplist2, toplist))
+        {
+            DMP_CONT(toplist2, toplist);
+        }
+
+        if (!checkEqual(toplist, toplist2))
+        {
+            DMP_CONT(toplist, toplist2);
+        }
+
         for (const auto& origin : origin_map)
         {
             if (randOne() % 2 == 1)
@@ -389,8 +484,18 @@ namespace ns_toplist4
                 assert(false);
             }
 
-            // const uint32_t ret2 = toplist2->deleteByKey(origin.first);
-            // assert(ret2 == ret);
+            const uint32_t ret2 = toplist2->deleteByKey(origin.first);
+            assert(ret2 == ret);
+
+            if (!checkEqual(toplist2, toplist))
+            {
+                DMP_CONT(toplist2, toplist);
+            }
+
+            if (!checkEqual(toplist, toplist2))
+            {
+                DMP_CONT(toplist, toplist2);
+            }
         }
     }
 
@@ -399,11 +504,36 @@ namespace ns_toplist4
         FUNC;
         BLOCK_COST;
 
+        if (!checkEqual(toplist2, toplist))
+        {
+            DMP_CONT(toplist2, toplist);
+        }
+
+        if (!checkEqual(toplist, toplist2))
+        {
+            DMP_CONT(toplist, toplist2);
+        }
+
         for (uint32_t i = 0; i < max_size + 1000; i++)
         {
             if (randOne() % 2 == 0)
                 continue;
 
+            const uint32_t ret  = toplist->deleteByRank(i);
+            const uint32_t ret2 = toplist2->deleteByRank(i);
+            assert(ret == ret2);
+
+            if (!checkEqual(toplist2, toplist))
+            {
+                DMP_CONT(toplist2, toplist);
+            }
+
+            if (!checkEqual(toplist, toplist2))
+            {
+                DMP_CONT(toplist, toplist2);
+            }
+
+            /*
             UserDataPtr ptr1 = toplist->getDataByRank(i);
             if (!ptr1)
                 continue;
@@ -424,7 +554,6 @@ namespace ns_toplist4
                 assert(false);
             }
 
-            /*
             {
                 const uint32_t ret2 = toplist2->deleteByRank(i);
                 UserDataPtr    ptr3 = toplist2->getDataByRank(i);
@@ -442,7 +571,7 @@ namespace ns_toplist4
                     continue;
                 }
                 assert(ptr2->userid == ptr3->userid);
-                assert(ptr2 == ptr3);
+                assert(equalData(ptr2, ptr3));
             }
             */
         }
@@ -452,6 +581,16 @@ namespace ns_toplist4
     {
         FUNC;
         BLOCK_COST;
+
+        if (!checkEqual(toplist2, toplist))
+        {
+            DMP_CONT(toplist2, toplist);
+        }
+
+        if (!checkEqual(toplist, toplist2))
+        {
+            DMP_CONT(toplist, toplist2);
+        }
 
         for (uint32_t i = 0; i < max_size + 10; i++)
         {
@@ -465,15 +604,18 @@ namespace ns_toplist4
             const uint32_t rankto   = std::max(from, to);
 
             INFO("test_deleteByRangedRank: [{}] --> [{}]", rankfrom, rankto);
-            const uint32_t ret = toplist->deleteByRank(rankfrom, rankto);
-            if (ret)
+            const uint32_t ret  = toplist->deleteByRank(rankfrom, rankto);
+            const uint32_t ret2 = toplist2->deleteByRank(rankfrom, rankto);
+            assert(ret == ret2);
+
+            if (!checkEqual(toplist2, toplist))
             {
-                forEachRank();
-                INFO("test_deleteByRangedRank: [{}] --> [{}]", rankfrom, rankto);
+                DMP_CONT(toplist2, toplist);
             }
-            else
+
+            if (!checkEqual(toplist, toplist2))
             {
-                // assert(false);
+                DMP_CONT(toplist, toplist2);
             }
         }
     }
@@ -533,14 +675,14 @@ namespace ns_toplist4
         {
             forEachRank();
         }
-        // forEachRank();
+        forEachRank();
     }
 }  // namespace ns_toplist4
 
 namespace ns_skip4
 {
     // ./bin/example --type=vec/set/skip --op=insert/update --size=10
-    // ./bin/example --type=skip --op=insert --size=10
+    // ./bin/example --type=skip --op=test_update --size=10
     void main(int argc, char** argv)
     {
         ns_toplist4::main(argc, argv);

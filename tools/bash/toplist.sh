@@ -1,8 +1,8 @@
 #/bin/bash
 
 path="../../build"
-#VER="debug"
-VER="release" 
+VER="debug"
+#VER="release" 
 
 function testtoplist()
 {
@@ -12,20 +12,20 @@ function testtoplist()
     echo $cmd
 
     #for loop in 1 2 3 4 5 6 7 8 9 10 11 12
-    for loop in {0..200}
+    for loop in {0..13}
     do
         $cmd
-        sleep 3
+        sleep 1
     done
 }
 
 function call_test()
 {
     testtoplist $1 skip $2
-    echo "====================================="
-    testtoplist $1 set $2
-    echo "====================================="
-    testtoplist $1 vec $2
+    #echo "====================================="
+    #testtoplist $1 set $2
+    #echo "====================================="
+    #testtoplist $1 vec $2
 }
 
 function call_looptimes()
@@ -41,7 +41,7 @@ function call_looptimes()
 function call_looptimes1()
 {
     #for loop in 100 500 1000 2000 5000 8000 10000 20000 30000 50000
-    for loop in 100 500 
+    for loop in 100 500 1000 1500 1800 2000 2300 2500 2800 3000 3300 3600 4000 4300 4600 5000 
     do
         echo "loop times: $loop -------------------------------------"
         call_test $1 $loop 
@@ -56,7 +56,7 @@ function call_loopskip()
     do
         echo "loop times: $loop -------------------------------------"  
         testtoplist $1 skip $loop
-        sleep 1
+        sleep 10
     done
 }
 
@@ -78,8 +78,7 @@ function call_allfunc()
         call_looptimes1 $loop
         sleep 10
     done
-
-
 }
+
 #call_looptimes1 $1
 call_allfunc
